@@ -17,16 +17,16 @@ class MyListener: public ofxLaunchpadListener{
 		}
 	}
 	virtual void automapButtonReleased(int col) {
-		cout << "Automap " << col << " released" << endl;
+		return;
 	}
 	virtual void gridButtonPressed(int col, int row) {
 		presses[row][col] = 1;
 	}
 	virtual void gridButtonReleased(int col, int row) {
-		cout << "Grid " << row << ","  << col << " released" << endl;
+		return;
 	}
 	virtual void launchpadEvent(ButtonEvent event) {
-		cout << "button event" << endl;
+		return;
 	}
 };
 
@@ -38,6 +38,13 @@ void myApp::setup(){
 
 	ofxLaunchpadListener *listener = new MyListener();
 	launchpad.setup(1, listener);
+
+	launchpad.setLedAutomap(0, ofColor::green);
+	launchpad.setLedAutomap(1, ofColor::green);
+	launchpad.setLedAutomap(2, ofColor::green);
+	launchpad.setLedAutomap(3, ofColor::green);
+	launchpad.setLedAutomap(4, ofColor::yellow);
+
 	width = 5;
 	height = 5;
 	minSize = 3;
@@ -111,12 +118,13 @@ void myApp::setupBoard(){
 	}
 	for (y = 0; y < height; y++){
 		for (x = 0; x < width; x++){
-			board[y][x] = 0;
+			if (rand() % 2 == 0){
+				board[y][x] = 0;	
+			} else {
+				board[y][x] = 1;
+			}
 		}
 	}
-	x = rand() % width;
-	y = rand() % height;
-	board[y][x] = 1;
 }
 
 ofColor myApp::getColor(int i){
