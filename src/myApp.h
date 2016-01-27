@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxLaunchpadCustom.h"
+#include "ofxFFTLive.h"
 #include <cstdlib>
 
 class myApp : public ofBaseApp {
@@ -23,6 +24,7 @@ public:
   
   int board[8][8];
 
-  int width, height, minSize, maxSize;
-  int win;
+  int width, height;
+
+  ofxFFTLive fftLive;
 };

@@ -341,7 +341,9 @@ obj/linux64/Release/src/main.o: \
  /home/chris/OF/addons/ofxMidi/src/ofxMidiIn.h \
  /home/chris/OF/addons/ofxMidi/src/ofxMidiOut.h \
  /home/chris/OF/addons/ofxLaunchpad/src/ofxLaunchpadListener.h \
- /home/chris/OF/addons/ofxLaunchpad/src/ofxLaunchpadColor.h
+ /home/chris/OF/addons/ofxLaunchpad/src/ofxLaunchpadColor.h \
+ /home/chris/OF/addons/ofxFFT/src/ofxFFTLive.h \
+ /home/chris/OF/addons/ofxFFT/src/ofxFFTBase.h
 
 /home/chris/OF/libs/openFrameworks/ofMain.h:
 
@@ -1058,3 +1060,7 @@ obj/linux64/Release/src/main.o: \
 /home/chris/OF/addons/ofxLaunchpad/src/ofxLaunchpadListener.h:
 
 /home/chris/OF/addons/ofxLaunchpad/src/ofxLaunchpadColor.h:
+
+/home/chris/OF/addons/ofxFFT/src/ofxFFTLive.h:
+
+/home/chris/OF/addons/ofxFFT/src/ofxFFTBase.h:

@@ -38,23 +38,29 @@ void myApp::setup(){
 
 	ofxLaunchpadListener *listener = new MyListener();
 	launchpad.setup(1, listener);
+	
+	height = 8;
+	width = 8;
 
-	launchpad.setLedAutomap(0, ofColor::green);
-	launchpad.setLedAutomap(1, ofColor::green);
-	launchpad.setLedAutomap(2, ofColor::green);
-	launchpad.setLedAutomap(3, ofColor::green);
-	launchpad.setLedAutomap(4, ofColor::yellow);
+	fftLive.setMirrorData(false);
+  fftLive.setup();
 
-	width = 5;
-	height = 5;
-	minSize = 3;
-	maxSize = 8;
-	win = 0;
+	fftLive.setThreshold(1.0);
+  fftLive.setPeakDecay(0.8);
+  fftLive.setMaxDecay(0.8);
+  fftLive.update();
+
 	setupBoard();
 }
 
 void myApp::update(){
 	int x, y;
+
+	fftLive.update();
+
+	float * audioData = new float[width];
+  fftLive.getFftPeakData(audioData, width);
+
 	for (y = 0; y < height; y++){
 		for (x = 0; x < width; x++){
 			if (presses[y][x] == 1){
@@ -63,66 +69,48 @@ void myApp::update(){
 			}
 		}
 	}
-	if (win){
-		win = 0;
-		playWinAnimation();
-		setupBoard();
-		return;
-	}
-	for (y = 0; y < 8; y++){
-		for (x = 0; x < 8; x++){
-			launchpad.setLedGrid(x, y, getColor(board[y][x]));
+	for (x = 0; x < 8; x++){
+		float data = audioData[x];
+		data = 1-data;
+		for (y = 0; y < 8; y++){
+			float threshold = 1-((y+1)/(8.0));
+			if (data > threshold){
+				if (y == 0){
+					launchpad.setLedGrid(x, y, ofColor::red);		
+				} else if (y < 3){
+					launchpad.setLedGrid(x, y, ofColor::yellow);		
+				} else {
+					launchpad.setLedGrid(x, y, ofColor::green);
+				}
+				
+			} else {
+				launchpad.setLedGrid(x, y, ofColor::black);
+			}
 		}
 	}
-	if (reset == 1){
-		reset = 0;
-		setupBoard();
-	}
-	if (resizeX != 0){
-		width += resizeX;
-		if (width < minSize){
-			width = minSize;
-		}
-		if (width > maxSize){
-			width = maxSize;
-		}
-		resizeX = 0;
-		setupBoard();
-	}
-	if (resizeY != 0){
-		height += resizeY;
-		if (height < minSize){
-			height = minSize;
-		}
-		if (height > maxSize){
-			height = maxSize;
-		}
-		resizeY = 0;
-		setupBoard();
-	}
+
+	delete[] audioData;
 }
 
 void myApp::draw(){
-	ofBackground(0);
-	launchpad.draw(0, 0, ofGetWidth());
+	ofSetColor(255);
+    
+  int w = OFX_FFT_WIDTH;
+  int h = OFX_FFT_HEIGHT;
+  int x = 20;
+  int y = ofGetHeight() - h - 20;
+  fftLive.draw(x, y, w, h);
+	//ofBackground(0);
+	//launchpad.draw(0, 0, ofGetWidth());
 }
 
 void myApp::setupBoard(){
 	int x, y;
 	// reset board
-	for (y = 0; y < 8; y++){
-		for (x = 0; x < 8; x++){
-			board[y][x] = -1;
-			presses[y][x] = 0;
-		}
-	}
 	for (y = 0; y < height; y++){
 		for (x = 0; x < width; x++){
-			if (rand() % 2 == 0){
-				board[y][x] = 0;	
-			} else {
-				board[y][x] = 1;
-			}
+			board[y][x] = 0;
+			presses[y][x] = 0;
 		}
 	}
 }
@@ -137,37 +125,10 @@ ofColor myApp::getColor(int i){
 }
 
 void myApp::onGridPressed(int row, int col){
-	board[row][col] = !board[row][col];
-	if (row + 1 < height){
-		board[row+1][col] = !board[row+1][col];
-	}
-	if (row - 1 >= 0){
-		board[row-1][col] = !board[row-1][col];
-	}
-	if (col + 1 < width){
-		board[row][col+1] = !board[row][col+1];
-	}
-	if (col - 1 >= 0){
-		board[row][col-1] = !board[row][col-1];
-	}
-	win = 1;
-	for (int y = 0; y < height; y++){
-		for (int x = 0; x < width; x++){
-			if (board[y][x]){
-				win = 0;
-			}
-		}
-	}
+	
 }
 
 void myApp::playWinAnimation(){
-	int x, y;
-	for (y = 0; y < 8; y++){
-		for (x = 0; x < 8; x++){
-			launchpad.setLedGrid(x, y, ofColor::green);
-		}
-	}
-	ofSleepMillis(3000);
 }
 
 void myApp::mousePressed(int x, int y, int button) {
